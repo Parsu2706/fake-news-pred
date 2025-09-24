@@ -1,0 +1,47 @@
+version: '3.8'
+
+services: 
+  mlflow-server: 
+    build: 
+      context: .
+      dockerfile: Dockerfile.mlflow
+    container_name: mlflow-server
+    ports: 
+      - "5000:5000"
+    volumes: 
+      - ./mlruns:/app/mlruns
+
+  trainer: 
+    build: 
+      context: .
+      dockerfile: Dockerfile.trainer
+    container_name: trainer
+    depends_on:
+      - mlflow-server
+    environment: 
+      MLFLOW_TRACKING_URI: http://mlflow-server:5000
+    volumes: 
+      - ./src:/app/src
+      - ./mlruns:/app/mlruns
+    command: ['bash', '-c', 'python run_preprocessing.py && python src/train.py']
+
+
+dashboard:
+  build: 
+    context: .
+    dockerfile: Dockerfile.dashboard
+  container_name: dashboard
+  depends_on: 
+    - mlflow-server
+    - trainer
+  ports: 
+    - "8501:8501"
+  environment: 
+    MLFLOW_TRACKING_URI: http://mlflow-server:5000
+  volumes: 
+    - ./src:/app/src
+    - ./app.py:/app/app.py
+    - ./processed_data.csv:/app/processed_data.csv
+    - ./data:/app/data
+
+
