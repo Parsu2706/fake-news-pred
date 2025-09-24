@@ -1,0 +1,19 @@
+FROM python:3.10-slim
+
+WORKDIR /app 
+
+COPY requirements.txt . 
+
+RUN pip install --no-cache-dir -r requirements.txt
+RUN python -m nltk.downloader punkt stopwords wordnet
+
+
+
+COPY src/ ./src
+COPY run_preprocessing.py ./run_preprocessing.py
+COPY data ./data 
+
+ENV MLFLOW_TRACKING_URI=http://mlflow-server:5000 
+
+CMD ["bash", "-c", "python run_preprocessing.py && python src/train.py"]
+

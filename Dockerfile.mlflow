@@ -1,0 +1,22 @@
+#This file helps to track Mlflow server 
+
+
+FROM python:3.10-slim
+
+WORKDIR /app 
+
+#INstall Mlflow 
+
+RUN pip install --no-cache-dir mlflow == 3.4.0
+
+#expose the mlflow port 
+EXPOSE 5000
+
+RUN mkdir -p /app/mlruns
+
+CMD ["mlflow" , "server" , \
+    "--backend-store-uri" , "file:///app/mlruns" , \
+    "--default-artifact-root" , "/app/mlruns" , \ 
+    "--host" , "0.0.0.0" , \
+    "--port" , "5000"]
+
