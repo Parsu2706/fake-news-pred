@@ -1,0 +1,9 @@
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+nltk
+mlflow==3.4.0
+streamlit
+wordcloud
